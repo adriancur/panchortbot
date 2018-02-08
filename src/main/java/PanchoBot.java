@@ -1,3 +1,4 @@
+
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -25,37 +26,33 @@ public class PanchoBot extends TelegramLongPollingBot {
                 //Send welcome message and enable bot.
                 sendAndExecuteMessage(chat_id, MESSAGE_START);
                 BOT_SETTING_ENABLED = true;
-            }else if(update.getMessage().getText().equals(COMMAND_STOP)){
+            } else if (update.getMessage().getText().equals(COMMAND_STOP)) {
                 //Disable bot
                 sendAndExecuteMessage(chat_id, MESSAGE_STOP);
                 BOT_SETTING_ENABLED = false;
-            }
-            else{
-                if(BOT_SETTING_ENABLED) {
-                    if(update.getMessage().getText().equals(COMMAND_BARDOON))
-                    {
+            } else {
+                if (BOT_SETTING_ENABLED) {
+                    if (update.getMessage().getText().equals(COMMAND_BARDOON)) {
                         //Mode bardo on, response every message.
                         BOT_SETTING_RANDOMIZE_CHANCE = false;
-                    }else if(update.getMessage().getText().equals(COMMAND_BARDOOFF))
-                    {
+                    } else if (update.getMessage().getText().equals(COMMAND_BARDOOFF)) {
                         //Mode bardo off, normal response.
                         BOT_SETTING_RANDOMIZE_CHANCE = true;
                     }
 
-                    if(BOT_SETTING_RANDOMIZE_CHANCE) {
+                    if (BOT_SETTING_RANDOMIZE_CHANCE) {
                         //Validate if random response is enabled
                         if (Math.random() > 0.93) {
-                            sendAndExecuteMessage(chat_id,getPhoneticString(update.getMessage().getText()));
+                            sendAndExecuteMessage(chat_id, getPhoneticString(update.getMessage().getText()));
                         }
-                    }else {
+                    } else {
                         //Response every message
-                        sendAndExecuteMessage(chat_id,getPhoneticString(update.getMessage().getText()));
+                        sendAndExecuteMessage(chat_id, getPhoneticString(update.getMessage().getText()));
                     }
                 }
             }
         }
     }
-
 
     private String getPhoneticString(String message) {
         //Direct message to bot.
@@ -74,7 +71,7 @@ public class PanchoBot extends TelegramLongPollingBot {
         return BOT_SETTING_TOKEN;
     }
 
-    private void sendAndExecuteMessage(long chat_id, String message_text){
+    private void sendAndExecuteMessage(long chat_id, String message_text) {
         SendMessage message = new SendMessage() // Create a message object object
                 .setChatId(chat_id)
                 .setText(message_text);
