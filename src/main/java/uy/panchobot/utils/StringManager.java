@@ -1,5 +1,7 @@
 package uy.panchobot.utils;
 import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class StringManager {
 
@@ -9,12 +11,17 @@ public class StringManager {
     {
         FileManager fileManager = FileManager.getInstance();
         String[] lines =  fileManager.readFileLines();
+        ArrayList<String> matchingLines = new ArrayList<String>();
 
         for (String line:lines) {
             String lastWord = this.processLine(line);
             if(this.twoWordsEndAreEquals(messageLastWord, lastWord)){
-                return line;
+                matchingLines.add(line);
             }
+        }
+        if(!matchingLines.isEmpty()){
+            Random rand = new Random();
+            return matchingLines.get(rand.nextInt(matchingLines.size()));
         }
         return null;
     }

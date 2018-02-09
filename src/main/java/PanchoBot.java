@@ -11,13 +11,18 @@ public class PanchoBot extends TelegramLongPollingBot {
 
     private static final String BOT_SETTING_USERNAME = "Panchortbot";
     private static final String BOT_SETTING_TOKEN = "500229132:AAGwulp-Gd9N47tAx-wAPqbneYC0OXYTYZU";
-    private static final String MESSAGE_START = "El panchobot quedo activo y te va a responder cuando le pinte.";
-    private static final String MESSAGE_STOP = "**Gracias por el asado!**";
+    private static final String MESSAGE_START = "El panchobot quedo activo y te va a responder cuando se le canten las bolas.";
+    private static final String MESSAGE_STOP = "Gracias por el asado!";
     private static final String COMMAND_START = "/START";
+    private static final String COMMAND_START_ARROBA = "/START@"+BOT_SETTING_USERNAME.toUpperCase();
     private static final String COMMAND_STOP = "/STOP";
+    private static final String COMMAND_STOP_ARROBA = "/STOP@"+BOT_SETTING_USERNAME.toUpperCase();
     private static final String COMMAND_BARDOON = "/STARTBARDO";
+    private static final String COMMAND_BARDOON_ARROBA = "/STARTBARDO@"+BOT_SETTING_USERNAME.toUpperCase();
     private static final String COMMAND_BARDOOFF = "/STOPBARDO";
+    private static final String COMMAND_BARDOOFF_ARROBA = "/STOPBARDO@"+BOT_SETTING_USERNAME.toUpperCase();
     private static final String COMMAND_ADD= "/ADD";
+    private static final String COMMAND_ADD_ARROBA = "/ADD@"+BOT_SETTING_USERNAME.toUpperCase();
     private HashMap<Long,Boolean> BOT_SETTING_RANDOMIZE_CHANCE = new HashMap<Long,Boolean>();
     private HashMap<Long,Boolean> BOT_CHAT_ENABLED = new HashMap<Long,Boolean>();
 
@@ -31,22 +36,22 @@ public class PanchoBot extends TelegramLongPollingBot {
                 //Is a command
                 String command = StringManager.getInstance().getCleanCommand(message);
 
-                if (command.equals(COMMAND_START)) {
+                if (command.equals(COMMAND_START) || command.equals(COMMAND_START_ARROBA)) {
                     //Send welcome message and enable bot.
                     sendAndExecuteMessage(chat_id, MESSAGE_START);
                     BOT_CHAT_ENABLED.put(chat_id,true);
-                } else if (command.equals(COMMAND_STOP)) {
+                } else if (command.equals(COMMAND_STOP)|| command.equals(COMMAND_STOP_ARROBA)) {
                     //Disable bot
                     sendAndExecuteMessage(chat_id, MESSAGE_STOP);
                     BOT_CHAT_ENABLED.put(chat_id,false);
                 }else if (BOT_CHAT_ENABLED.get(chat_id) != null && BOT_CHAT_ENABLED.get(chat_id).booleanValue() == true) {
-                    if (command.equals(COMMAND_BARDOON)) {
+                    if (command.equals(COMMAND_BARDOON)|| command.equals(COMMAND_BARDOON_ARROBA)) {
                         //Mode bardo on, response every message.
                         BOT_SETTING_RANDOMIZE_CHANCE.put(chat_id,true);
-                    } else if (command.equals(COMMAND_BARDOOFF)) {
+                    } else if (command.equals(COMMAND_BARDOOFF) || command.equals(COMMAND_BARDOOFF_ARROBA)) {
                         //Mode bardo off, normal response.
                         BOT_SETTING_RANDOMIZE_CHANCE.put(chat_id,false);
-                    }else if (command.equals(COMMAND_ADD)) {
+                    }else if (command.equals(COMMAND_ADD) || command.equals(COMMAND_ADD_ARROBA)) {
                         //Add phrase to file.
                         this.addPhraseToFile(message);
                     }
