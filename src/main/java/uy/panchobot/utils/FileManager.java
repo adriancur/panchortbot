@@ -15,15 +15,52 @@ import java.util.stream.Stream;
 public class FileManager {
 
     private static FileManager singletonFileManagerInstance = null;
-    public static final String FILE_NAME = "meta-inf/rimas.txt";
+    public static final String FILE_NAME = "rimas.txt";
 
     //Logger
     private static final Logger LOG = Logger.getLogger(FileManager.class.getName());
 
+    public void writeFile(String message) {
+        try {
+            //Check if exist modified file in user.dir
+            //if not, create a new one and copy the default content.
+            File file = new File(System.getProperty("user.dir"), FILE_NAME);
+            if(!file.exists()){
+                file.createNewFile();
+                Writer output =  new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
+                InputStream is = this.getClass().getClassLoader().getResourceAsStream(FILE_NAME);
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                List<String> originalLines = br.lines().collect(Collectors.toList());
+                for (String line: originalLines) {
+                    output.append(line);
+                    output.append(System.lineSeparator());
+                }
+                output.append(message);
+                output.append(System.lineSeparator());
+                output.close();
+            }else{
+                Writer output = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file,true), StandardCharsets.UTF_8));
+                output.append(message);
+                output.append(System.lineSeparator());
+                output.close();
+            }
+        } catch (IOException e) {
+            LOG.log(Level.SEVERE, "Error al escribir el archivo {0}", FILE_NAME);
+        }
+    }
+
     public String[] readFileLines() {
         List<String> listaLineasArchivo = new ArrayList<String>();
+        InputStream is = null;
         try {
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream(FILE_NAME);
+            //Check if exist modified file in user.dir
+            //if not, use default file.
+            File file = new File(System.getProperty("user.dir"), FILE_NAME);
+            if(file.exists() && !file.isDirectory()){
+                is = new FileInputStream(file);
+            }else{
+                is = this.getClass().getClassLoader().getResourceAsStream(FILE_NAME);
+            }
 
             BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             listaLineasArchivo =  br.lines().collect(Collectors.toList());

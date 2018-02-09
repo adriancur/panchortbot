@@ -1,7 +1,5 @@
 package uy.panchobot.utils;
 import java.text.Normalizer;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 public class StringManager {
 
@@ -72,5 +70,38 @@ public class StringManager {
             singletonStringManagerInstance = new StringManager();
         }
         return singletonStringManagerInstance;
+    }
+
+    public void addPhraseToFile(String message){
+        message = this.preProcessPhraseBeforeAdd(message);
+        if(message != null) {
+            FileManager fm = FileManager.getInstance();
+            fm.writeFile(message);
+        }
+    }
+
+    private String preProcessPhraseBeforeAdd(String message){
+        message = cutOffPhraseMaxLength(message); //Max length of phrase.
+        message = cutOffCommand(message);
+        //Include here any others validation to new messages.
+        return message;
+    }
+
+    private String cutOffPhraseMaxLength(String message){
+        if(message.length()>50)
+            return (message.substring(0, 50)).trim();
+        return message.trim();
+    }
+
+    private String cutOffCommand(String message){
+        if(message.contains(" "))
+            return message.substring(message.indexOf(" ")).trim();
+        return null;
+    }
+
+    public String getCleanCommand(String message){
+        if(message.contains(" "))
+            message = message.substring(0, message.indexOf(" "));
+        return message.toUpperCase().trim();
     }
 }

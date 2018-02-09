@@ -5,18 +5,21 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import uy.panchobot.utils.StringManager;
 
+import java.util.HashMap;
+
 public class PanchoBot extends TelegramLongPollingBot {
 
     private static final String BOT_SETTING_USERNAME = "Panchortbot";
     private static final String BOT_SETTING_TOKEN = "500229132:AAGwulp-Gd9N47tAx-wAPqbneYC0OXYTYZU";
     private static final String MESSAGE_START = "El panchobot quedo activo y te va a responder cuando le pinte.";
-    private static final String MESSAGE_STOP = "Gracias por el asado!.";
-    private static final String COMMAND_START = "/start";
-    private static final String COMMAND_STOP = "/stop";
-    private static final String COMMAND_BARDOON = "/startbardo";
-    private static final String COMMAND_BARDOOFF = "/stopbardo";
-    private static boolean BOT_SETTING_ENABLED = false;
-    private static boolean BOT_SETTING_RANDOMIZE_CHANCE = true;
+    private static final String MESSAGE_STOP = "**Gracias por el asado!**";
+    private static final String COMMAND_START = "/START";
+    private static final String COMMAND_STOP = "/STOP";
+    private static final String COMMAND_BARDOON = "/STARTBARDO";
+    private static final String COMMAND_BARDOOFF = "/STOPBARDO";
+    private static final String COMMAND_ADD= "/ADD";
+    private HashMap<Long,Boolean> BOT_SETTING_RANDOMIZE_CHANCE = new HashMap<Long,Boolean>();
+    private HashMap<Long,Boolean> BOT_CHAT_ENABLED = new HashMap<Long,Boolean>();
 
     public void onUpdateReceived(Update update) {
         long chat_id = update.getMessage().getChatId();
@@ -26,27 +29,32 @@ public class PanchoBot extends TelegramLongPollingBot {
             String message = update.getMessage().getText();
             if(message.startsWith("/")){
                 //Is a command
-                if (message.equals(COMMAND_START)) {
+                String command = StringManager.getInstance().getCleanCommand(message);
+
+                if (command.equals(COMMAND_START)) {
                     //Send welcome message and enable bot.
                     sendAndExecuteMessage(chat_id, MESSAGE_START);
-                    BOT_SETTING_ENABLED = true;
-                } else if (message.equals(COMMAND_STOP)) {
+                    BOT_CHAT_ENABLED.put(chat_id,true);
+                } else if (command.equals(COMMAND_STOP)) {
                     //Disable bot
                     sendAndExecuteMessage(chat_id, MESSAGE_STOP);
-                    BOT_SETTING_ENABLED = false;
-                }else if (BOT_SETTING_ENABLED) {
-                    if (message.equals(COMMAND_BARDOON)) {
+                    BOT_CHAT_ENABLED.put(chat_id,false);
+                }else if (BOT_CHAT_ENABLED.get(chat_id) != null && BOT_CHAT_ENABLED.get(chat_id).booleanValue() == true) {
+                    if (command.equals(COMMAND_BARDOON)) {
                         //Mode bardo on, response every message.
-                        BOT_SETTING_RANDOMIZE_CHANCE = false;
-                    } else if (message.equals(COMMAND_BARDOOFF)) {
+                        BOT_SETTING_RANDOMIZE_CHANCE.put(chat_id,true);
+                    } else if (command.equals(COMMAND_BARDOOFF)) {
                         //Mode bardo off, normal response.
-                        BOT_SETTING_RANDOMIZE_CHANCE = true;
+                        BOT_SETTING_RANDOMIZE_CHANCE.put(chat_id,false);
+                    }else if (command.equals(COMMAND_ADD)) {
+                        //Add phrase to file.
+                        this.addPhraseToFile(message);
                     }
                 }
             }else{
                 //Is a message
-                if (BOT_SETTING_ENABLED) {
-                    if (BOT_SETTING_RANDOMIZE_CHANCE) {
+                if (BOT_CHAT_ENABLED.get(chat_id) != null && BOT_CHAT_ENABLED.get(chat_id).booleanValue() == true) {
+                    if (BOT_SETTING_RANDOMIZE_CHANCE.get(chat_id) == null || BOT_SETTING_RANDOMIZE_CHANCE.get(chat_id).booleanValue() == false) {
                         //Validate if random response is enabled
                         if (Math.random() > 0.93) {
                             String responseMessage = getPhoneticString(message);
@@ -62,6 +70,11 @@ public class PanchoBot extends TelegramLongPollingBot {
                 }
             }
         }
+    }
+
+    private void addPhraseToFile(String message){
+        StringManager sm = StringManager.getInstance();
+        sm.addPhraseToFile(message);
     }
 
     private String getPhoneticString(String message) {
