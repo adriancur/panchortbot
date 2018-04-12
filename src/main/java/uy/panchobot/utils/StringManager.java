@@ -27,10 +27,10 @@ public class StringManager {
     }
 
     private boolean twoWordsEndAreEquals(String firstWord, String secondWord){
-        if (firstWord == null || secondWord == null || firstWord.length() < 3 || secondWord.length() < 3) {
+        if (firstWord == null || secondWord == null || firstWord.length() < 4 || secondWord.length() < 4) {
             return false;
         } else {
-           if((firstWord.substring(firstWord.length() - 3)).equals((secondWord.substring(secondWord.length() - 3))))
+           if((firstWord.substring(firstWord.length() - 4)).equals((secondWord.substring(secondWord.length() - 4))))
                return true;
         }
         return false;
